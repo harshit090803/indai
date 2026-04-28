@@ -1,0 +1,12 @@
+SpeechRecognition
+pyaudio
+pystray
+Pillow
+pyttsx3
+ollama
+faster-whisper
+pyautogui
+requests
+sounddevice
+numpy
+scipy

@@ -1,0 +1,56 @@
+.language-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 48px;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border-radius: 32px;
+}
+
+.language-selection {
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.language-selection label {
+    display: block;
+    margin-bottom: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 15px;
+    letter-spacing: 0.5px;
+}
+
+.language-dropdown {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 500;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 16px;
+    cursor: pointer;
+}
+
+.language-dropdown option {
+    background: #1e293b;
+    color: white;
+    padding: 10px;
+}
+
+@media (max-width: 480px) {
+    .language-container {
+        width: 92%;
+        padding: 32px 24px;
+        border-radius: 24px;
+    }
+}
