@@ -157,27 +157,81 @@ const Login = () => {
 
     const handleEmailLogin = async (e) => {
         e.preventDefault();
+        
+        if (!email || !password) {
+            setOtpError("Please enter both email and password.");
+            return;
+        }
+
         setPhoneLoading(true);
         setOtpError("");
 
-        // FORCE MOCK LOGIN FOR TESTING UNTIL MONGODB BACKEND IS READY
-        setTimeout(() => {
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+                navigate('/language');
+            } else {
+                setOtpError(data.message || "Invalid credentials");
+            }
+        } catch (error) {
+            setOtpError("An error occurred during login. Please try again.");
+        } finally {
             setPhoneLoading(false);
-            navigate('/language');
-        }, 800);
+        }
     };
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setPhoneLoading(true);
-        setOtpError("");
+        
+        if (authMode === 'register-email') {
+            if (!name || !email || !password) {
+                setOtpError("Please fill in all fields.");
+                return;
+            }
+            
+            setPhoneLoading(true);
+            setOtpError("");
 
-        // FORCE MOCK REGISTRATION FOR TESTING UNTIL MONGODB BACKEND IS READY
-        setTimeout(() => {
-            setPhoneLoading(false);
-            setAuthMode('email');
-            setOtpError("Registration successful! Please sign in.");
-        }, 800);
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    setAuthMode('email');
+                    setOtpError("Registration successful! Please sign in.");
+                } else {
+                    setOtpError(data.message || "Registration failed");
+                }
+            } catch (error) {
+                setOtpError("An error occurred during registration. Please try again.");
+            } finally {
+                setPhoneLoading(false);
+            }
+        } else {
+            // Mock phone registration since no backend for it currently
+            if (!name || phone.length !== 10) {
+                setOtpError("Please enter valid name and 10-digit mobile number.");
+                return;
+            }
+            setPhoneLoading(true);
+            setOtpError("");
+            
+            setTimeout(() => {
+                setPhoneLoading(false);
+                setAuthMode('phone');
+                setOtpError("Phone registration successful! Please login.");
+            }, 800);
+        }
     };
 
     return (
