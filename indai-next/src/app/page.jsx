@@ -7,6 +7,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from '../firebase';
 import Link from 'next/link';
 import ThemeToggle from '../components/ThemeToggle';
+import { getApiBaseUrl } from '../lib/api';
 import './Login.css';
 import './logo-anim.css';
 
@@ -167,17 +168,20 @@ const Login = () => {
         setOtpError("");
 
         try {
-            const res = await fetch('/api/auth/login', {
+            const baseUrl = getApiBaseUrl();
+            const res = await fetch(`${baseUrl}/token/pair`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ username: email, password })
             });
             const data = await res.json();
             
-            if (res.ok && data.success) {
+            if (res.ok && data.access) {
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
                 navigate('/language');
             } else {
-                setOtpError(data.message || "Invalid credentials");
+                setOtpError(data.detail || "Invalid credentials");
             }
         } catch (error) {
             setOtpError("An error occurred during login. Please try again.");
@@ -199,7 +203,8 @@ const Login = () => {
             setOtpError("");
 
             try {
-                const res = await fetch('/api/auth/register', {
+                const baseUrl = getApiBaseUrl();
+                const res = await fetch(`${baseUrl}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password })

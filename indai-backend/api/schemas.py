@@ -6,3 +6,8 @@ class ChatMessageSchema(BaseModel):
     message: str
     response: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class RegisterSchema(BaseModel):
+    name: str
+    email: str
+    password: str

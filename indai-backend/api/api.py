@@ -1,6 +1,8 @@
 from ninja import Router
 from ninja_jwt.authentication import JWTAuth
-from .schemas import ChatMessageSchema
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from .schemas import ChatMessageSchema, RegisterSchema
 from .motor_client import db
 import logging
 
@@ -16,6 +18,19 @@ async def health(request):
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return {"status": "error", "message": str(e)}
+
+@router.post("/register")
+def register_user(request, payload: RegisterSchema):
+    if User.objects.filter(username=payload.email).exists():
+        return {"success": False, "message": "Email already registered"}
+    
+    user = User.objects.create(
+        username=payload.email,
+        email=payload.email,
+        first_name=payload.name,
+        password=make_password(payload.password)
+    )
+    return {"success": True, "message": "User created successfully"}
 
 @router.post("/chat", auth=JWTAuth())
 async def save_chat(request, payload: ChatMessageSchema):

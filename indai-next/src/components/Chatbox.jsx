@@ -8,6 +8,7 @@ import mammoth from 'mammoth';
 import './Chatbox.css';
 import { generateAIResponse } from '../services/aiService';
 import { useRouter } from 'next/navigation';
+import { fetchWithAuth } from '../lib/api';
 
 const generalTranslations = {
     en: "General", hi: "सामान्य", bn: "সাধারণ", kn: "ಸಾಮಾನ್ಯ", ta: "பொது"
@@ -123,6 +124,25 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editInput, setEditInput] = useState('');
     const messagesEndRef = useRef(null);
+
+    // Sync historical chats from Django Cloud API on load
+    useEffect(() => {
+        const syncCloudChats = async () => {
+            try {
+                const res = await fetchWithAuth('/chat');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.messages && data.messages.length > 0) {
+                        console.log("Cloud sync successful, found", data.messages.length, "messages.");
+                        // Future improvement: Merge cloud messages into local sessionList here
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch cloud chats", err);
+            }
+        };
+        syncCloudChats();
+    }, []);
 
     // Multimodal States
     const [attachments, setAttachments] = useState([]); // Array of { type, url, name, file }
@@ -614,6 +634,15 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                 text: cleanText,
                 sender: 'bot'
             }]);
+
+            // Push to Django Cloud Backend securely using JWT
+            fetchWithAuth('/chat', {
+                method: 'POST',
+                body: JSON.stringify({
+                    message: textToSend,
+                    response: cleanText
+                })
+            }).catch(e => console.error("Cloud Sync Failed", e));
 
             // COMMAND EXECUTION DETECTION
             const lowerText = textToSend.toLowerCase();
