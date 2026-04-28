@@ -104,7 +104,6 @@ const localizedStrings = {
         historyTitle: "சமீபத்திய அரட்டைகள்",
         noHistory: "சமீபத்திய அரட்டைகள் இல்லை.",
         newChat: "புதிய அரட்டை"
-        newChat: "New Chat"
     }
 };
 
