@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import BackgroundSlideshow from './BackgroundSlideshow';
-import { Send, X, AlertTriangle, ArrowRightCircle, MessageSquarePlus, MessageSquare, Paperclip, Image as ImageIcon, Mic, StopCircle, XCircle, FileText, PhoneOff, Waveform, Trash2, Ghost, Pencil, Check, Copy } from 'lucide-react';
+import { Send, X, AlertTriangle, ArrowRightCircle, MessageSquarePlus, MessageSquare, Paperclip, Image as ImageIcon, Mic, StopCircle, XCircle, FileText, PhoneOff, Waveform, Trash2, Ghost, Pencil, Check, Copy, User as UserIcon, LogOut } from 'lucide-react';
 import mammoth from 'mammoth';
 // PDF and OCR libraries will be dynamically imported to avoid Next.js SSR 'DOMMatrix is not defined' errors
 
@@ -104,7 +104,42 @@ const localizedStrings = {
         historyTitle: "சமீபத்திய அரட்டைகள்",
         noHistory: "சமீபத்திய அரட்டைகள் இல்லை.",
         newChat: "புதிய அரட்டை"
+        newChat: "New Chat"
     }
+};
+
+const TypewriterMessage = ({ text }) => {
+    const [displayText, setDisplayText] = useState('');
+    const isShort = text.length < 50;
+    
+    useEffect(() => {
+        if (isShort) {
+            setDisplayText(text);
+            return;
+        }
+        
+        let i = 0;
+        const interval = setInterval(() => {
+            setDisplayText(text.slice(0, i + 1));
+            i += 2; // Jump by 2 chars for faster typing illusion
+            if (i >= text.length) {
+                setDisplayText(text);
+                clearInterval(interval);
+            }
+        }, 15);
+        
+        return () => clearInterval(interval);
+    }, [text, isShort]);
+
+    return (
+        <div 
+            style={{ whiteSpace: 'pre-wrap', cursor: isShort ? 'default' : 'pointer' }}
+            onClick={() => { if (!isShort) setDisplayText(text); }}
+            title={isShort ? "" : "Click to reveal full message"}
+        >
+            {displayText}
+        </div>
+    );
 };
 
 const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
@@ -123,6 +158,8 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
     const [pendingQuestion, setPendingQuestion] = useState('');
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editInput, setEditInput] = useState('');
+    const [isThinking, setIsThinking] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
     const messagesEndRef = useRef(null);
 
     // Sync historical chats from Django Cloud API on load
@@ -590,6 +627,8 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
 
     const handleSend = async (textToSend = input) => {
         if (!textToSend.trim() && attachments.length === 0) return;
+        
+        setIsThinking(true);
 
         // Check topic question limits
         const usageKey = `usage_${topic}`;
@@ -667,7 +706,20 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                 text: "I'm having trouble connecting to my brain. Is the INDAI Assistant running?",
                 sender: 'bot'
             }]);
+        } finally {
+            setIsThinking(false);
+            // Re-focus input after sending
+            setTimeout(() => {
+                const inputEl = document.getElementById("chat-main-input");
+                if (inputEl) inputEl.focus();
+            }, 100);
         }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        router.push('/');
     };
 
     const handleEditSave = (id) => {
@@ -800,11 +852,91 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                                 </span>
                             )}
                         </div>
-                        {/* Mobile close button if needed or default close for desktop top right */}
-                        <button className="header-btn md-close" onClick={onClose}><X size={24} /></button>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ position: 'relative' }}>
+                                <button 
+                                    className="header-btn" 
+                                    onClick={() => setShowUserMenu(!showUserMenu)}
+                                    aria-label="User Menu"
+                                >
+                                    <UserIcon size={20} />
+                                </button>
+                                {showUserMenu && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '100%',
+                                        right: 0,
+                                        marginTop: '8px',
+                                        background: '#202123',
+                                        border: '1px solid #444',
+                                        borderRadius: '8px',
+                                        padding: '4px',
+                                        zIndex: 100,
+                                        minWidth: '120px'
+                                    }}>
+                                        <button 
+                                            onClick={handleLogout}
+                                            style={{
+                                                width: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                padding: '8px 12px',
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: '#ff4a4a',
+                                                cursor: 'pointer',
+                                                borderRadius: '4px',
+                                                fontSize: '14px'
+                                            }}
+                                            className="trash-icon-hover"
+                                        >
+                                            <LogOut size={16} /> Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            <button className="header-btn md-close" onClick={onClose} aria-label="Close Chat"><X size={24} /></button>
+                        </div>
                     </div>
 
-                    <div className="chatbox-messages">
+                    <div className="chatbox-messages" aria-live="polite">
+                        {messages.length === 0 && !isThinking && (
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%',
+                                color: '#888',
+                                gap: '16px',
+                                textAlign: 'center',
+                                padding: '20px'
+                            }}>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '50%' }}>
+                                    <MessageSquare size={48} color="#555" />
+                                </div>
+                                <h3>✨ Your conversation starts here.</h3>
+                                <p style={{ fontSize: '14px', maxWidth: '300px' }}>
+                                    Ask me anything about your data, or just say hello.
+                                </p>
+                                <button 
+                                    onClick={() => setInput("What can you do?")}
+                                    style={{
+                                        background: 'rgba(255,255,255,0.1)',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        padding: '8px 16px',
+                                        borderRadius: '16px',
+                                        color: '#ccc',
+                                        cursor: 'pointer',
+                                        marginTop: '10px'
+                                    }}
+                                >
+                                    "What can you do?"
+                                </button>
+                            </div>
+                        )}
                         {messages.map(msg => (
                             <div key={msg.id} className={`message ${msg.sender} `}>
                                 <div className="message-content">
@@ -825,7 +957,11 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                                         <>
                                             {msg.text && (
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                                                    <div style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</div>
+                                                    {msg.sender === 'bot' ? (
+                                                        <TypewriterMessage text={msg.text} />
+                                                    ) : (
+                                                        <div style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</div>
+                                                    )}
                                                     {msg.sender === 'user' && (
                                                         <div style={{ display: 'flex', gap: '8px', opacity: 0.7 }}>
                                                             <button
@@ -868,6 +1004,18 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                                 </div>
                             </div>
                         ))}
+                        
+                        {isThinking && (
+                            <div className="message bot">
+                                <div className="message-content">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0' }}>
+                                        <div className="thinking-dot" style={{ animationDelay: '0s' }}></div>
+                                        <div className="thinking-dot" style={{ animationDelay: '0.2s' }}></div>
+                                        <div className="thinking-dot" style={{ animationDelay: '0.4s' }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div ref={messagesEndRef} />
                     </div>
 
@@ -902,18 +1050,20 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                                 onChange={(e) => handleFileUpload(e, 'document')}
                             />
 
-                            <button className="icon-btn" onClick={() => fileInputRef.current?.click()} title="Attach Document"><Paperclip size={20} /></button>
-                            <button className="icon-btn" onClick={() => imageInputRef.current?.click()} title="Upload Image"><ImageIcon size={20} /></button>
-                            <button className="icon-btn live-voice-trigger" onClick={handleLiveVoiceStart} title="Live Voice Chat"><Mic size={20} /></button>
+                            <button className="icon-btn" onClick={() => fileInputRef.current?.click()} title="Attach Document" aria-label="Attach Document"><Paperclip size={20} /></button>
+                            <button className="icon-btn" onClick={() => imageInputRef.current?.click()} title="Upload Image" aria-label="Upload Image"><ImageIcon size={20} /></button>
+                            <button className="icon-btn live-voice-trigger" onClick={handleLiveVoiceStart} title="Live Voice Chat" aria-label="Live Voice Chat"><Mic size={20} /></button>
 
                             <input
+                                id="chat-main-input"
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder={t.placeholder}
+                                placeholder={isThinking ? "Thinking..." : t.placeholder}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                disabled={isThinking}
                             />
-                            <button onClick={() => handleSend()} className="send-btn" disabled={!input.trim() && attachments.length === 0}>
+                            <button onClick={() => handleSend()} className="send-btn" disabled={(!input.trim() && attachments.length === 0) || isThinking} aria-label="Send Message">
                                 <Send size={20} />
                             </button>
                             <div className="debug-hint" style={{ fontSize: '10px', color: '#999', position: 'absolute', bottom: '-15px', right: 0 }}>
