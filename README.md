@@ -25,8 +25,11 @@ The project is divided into three main parts:
    - Provides the user interface, chat interfaces, and settings.
    - Includes document parsing capabilities (PDF, Word, Images).
 
-3. **`indai-backend/`**
-   - Designated directory for future scalable backend infrastructure.
+3. **`indai-backend/` (Cloud API)**
+   - An enterprise-grade, fully asynchronous Django Ninja backend.
+   - Uses PostgreSQL for user authentication and structured data.
+   - Uses Async MongoDB (Motor) + Pydantic for high-volume unstructured chat histories.
+   - Exposes secure JWT-protected REST endpoints for the frontend and local assistant.
 
 ---
 
@@ -79,6 +82,42 @@ The web dashboard is built with Next.js and requires Node.js.
    npm run dev
    ```
 5. Open [http://localhost:3000](http://localhost:3000) in your browser!
+
+### 3. Setting up the Cloud API (`indai-backend`)
+
+The backend API is built on Django Ninja and requires Python, PostgreSQL, and MongoDB.
+
+1. Navigate to the backend folder:
+   ```bash
+   cd indai-backend
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Configure Environment Variables:
+   - Create a `.env` file inside `indai-backend/` and set:
+     ```env
+     DATABASE_URL=postgres://postgres:postgres@localhost:5432/indai
+     MONGODB_URI=mongodb://localhost:27017/indai
+     DJANGO_SECRET_KEY=your-super-secret-key-for-dev
+     CORS_ALLOWED_ORIGINS=http://localhost:3000
+     ```
+5. Run Migrations (Sets up the PostgreSQL Auth tables):
+   ```bash
+   python manage.py migrate
+   ```
+6. Start the server via Uvicorn (ASGI):
+   ```bash
+   uvicorn core.asgi:application --reload
+   ```
+   *Note: You can view the automatically generated Swagger API Docs at `http://localhost:8000/api/docs`.*
 
 ---
 
