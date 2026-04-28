@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2, ArrowLeft, Star, Zap, Infinity } from 'lucide-react';
+import { CheckCircle2, ArrowLeft, Star, Zap, Infinity, Code2 } from 'lucide-react';
 import '../legal.css'; // Reusing the global/legal background styles for consistency
 
 export default function PricingPage() {
