@@ -132,3 +132,13 @@ Once the Python `main.py` is running, the assistant listens in the background.
   - *"What time is it?"*
 
 To stop the assistant, right-click the "INDAI" icon in your system tray and select **Quit**.
+
+---
+
+## ☁️ Deployment Notes
+
+### Render Cold Starts (Backend)
+Currently, the IndAI Django backend is configured to be deployed on **Render's Free Tier**. Because of this, you may experience **Cold Starts**:
+- If the backend receives no traffic for 15 minutes, Render puts the container to sleep.
+- The very next request (e.g., trying to log in or send a chat) will take **10–30 seconds** to wake the server up.
+- **Solution**: To eliminate this delay and keep the server running 24/7, upgrade your Render Web Service to the **Starter Tier ($7/month)**.
