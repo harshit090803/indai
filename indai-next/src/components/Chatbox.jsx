@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import BackgroundSlideshow from './BackgroundSlideshow';
-import { Send, X, AlertTriangle, ArrowRightCircle, MessageSquarePlus, MessageSquare, Paperclip, Image as ImageIcon, Mic, StopCircle, XCircle, FileText, PhoneOff, Waveform, Trash2, Ghost, Pencil, Check, Copy, User as UserIcon, LogOut } from 'lucide-react';
+import { Send, X, AlertTriangle, ArrowRightCircle, MessageSquarePlus, MessageSquare, Paperclip, Image as ImageIcon, Mic, StopCircle, XCircle, FileText, PhoneOff, Waveform, Trash2, Ghost, Pencil, Check, Copy, User as UserIcon, LogOut, Menu } from 'lucide-react';
 import mammoth from 'mammoth';
 // PDF and OCR libraries will be dynamically imported to avoid Next.js SSR 'DOMMatrix is not defined' errors
 
@@ -159,6 +159,7 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
     const [editInput, setEditInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const messagesEndRef = useRef(null);
 
     // Sync historical chats from Django Cloud API on load
@@ -179,6 +180,18 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
         };
         syncCloudChats();
     }, []);
+
+    // Prevent body scroll when mobile sidebar is open
+    useEffect(() => {
+        if (sidebarOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [sidebarOpen]);
 
     // Multimodal States
     const [attachments, setAttachments] = useState([]); // Array of { type, url, name, file }
@@ -781,13 +794,21 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
         <div className="chatbox-wrapper">
             <BackgroundSlideshow />
             <div className="chatbox-container chatgpt-layout">
+                {/* MOBILE SIDEBAR OVERLAY */}
+                {sidebarOpen && (
+                    <div 
+                        className="sidebar-overlay" 
+                        onClick={() => setSidebarOpen(false)}
+                    ></div>
+                )}
+                
                 {/* LEFT SIDEBAR */}
-                <div className="chatgpt-sidebar">
+                <div className={`chatgpt-sidebar ${sidebarOpen ? 'open' : ''}`}>
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="new-chat-btn" onClick={() => handleNewChat(topic, false)} style={{ flex: 1, padding: '10px' }}>
+                        <button className="new-chat-btn" onClick={() => { handleNewChat(topic, false); setSidebarOpen(false); }} style={{ flex: 1, padding: '10px' }}>
                             <MessageSquarePlus size={20} /> {t.newChat}
                         </button>
-                        <button className="new-chat-btn" onClick={() => handleNewChat(topic, true)} title="Temporary Chat (No Save)" style={{ padding: '10px', background: 'rgba(255, 255, 255, 0.1)' }}>
+                        <button className="new-chat-btn" onClick={() => { handleNewChat(topic, true); setSidebarOpen(false); }} title="Temporary Chat (No Save)" style={{ padding: '10px', background: 'rgba(255, 255, 255, 0.1)' }}>
                             <Ghost size={20} />
                         </button>
                     </div>
@@ -801,6 +822,7 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                                 className={`recent - topic - item ${session.id === currentSessionId ? 'active' : ''} `}
                                 onClick={() => {
                                     setCurrentSessionId(session.id);
+                                    setSidebarOpen(false);
                                     if (topic === generalEquivalent && session.topic !== generalEquivalent && onTopicChange) {
                                         // Optional: if in general, clicking a physics session jumps to physics topic?
                                         // Let's keep topic as "General" but load the chat, or change topic.
@@ -835,6 +857,13 @@ const Chatbox = ({ topic, language, onClose, onTopicChange, allTopics }) => {
                 <div className="chatgpt-main">
                     <div className="chatbox-header">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <button 
+                                className="header-btn mobile-menu-btn" 
+                                onClick={() => setSidebarOpen(true)}
+                                aria-label="Open Menu"
+                            >
+                                <Menu size={20} />
+                            </button>
                             <h2>{t.chatbotTitle} {topic}</h2>
                             {isCurrentTemporary && (
                                 <span style={{
