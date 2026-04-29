@@ -148,7 +148,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'json': {
-            'format': '%(asctime)s %(levelname)s %(name)s %(message)s',
+            'format': '{"time": "%(asctime)s", "level": "%(levelname)s", "name": "%(name)s", "message": "%(message)s"}',
             'class': 'logging.Formatter',
         },
     },
@@ -157,9 +157,22 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'json',
         },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'django-requests.log',
+            'maxBytes': 1024 * 1024 * 10, # 10 MB
+            'backupCount': 5,
+            'formatter': 'json',
+        },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
     },
 }
+
+# Production Security Headers
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
