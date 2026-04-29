@@ -1,0 +1,10 @@
+{
+  "name": "indai-root",
+  "version": "1.0.0",
+  "description": "Root package.json for Render deployment",
+  "scripts": {
+    "build:frontend": "cd indai-next && npm install && npm run build",
+    "start:frontend": "cd indai-next && npm run start",
+    "build:backend": "cd indai-backend && pip install -r requirements.txt && python manage.py migrate"
+  }
+}
