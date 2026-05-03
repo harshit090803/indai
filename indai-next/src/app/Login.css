@@ -333,7 +333,8 @@
 }
 
 [data-theme='light'] .phone-input::placeholder {
-    color: rgba(0, 0, 0, 0.4);
+    color: var(--text-secondary);
+    opacity: 0.7;
 }
 
 .phone-icon {
@@ -387,7 +388,8 @@
 
 [data-theme='light'] .email-input::placeholder,
 [data-theme='light'] .password-input::placeholder {
-    color: rgba(0, 0, 0, 0.4);
+    color: var(--text-secondary);
+    opacity: 0.7;
 }
 
 .password-input-wrapper {
@@ -488,6 +490,20 @@
 .footer-nav a:hover {
     color: #fff;
     border-bottom: 1px solid #fff;
+}
+
+[data-theme='light'] .footer-nav {
+    color: var(--text-secondary);
+}
+
+[data-theme='light'] .footer-nav a {
+    color: var(--primary-color);
+    border-bottom: 1px dashed var(--primary-color);
+}
+
+[data-theme='light'] .footer-nav a:hover {
+    color: var(--secondary-color);
+    border-bottom: 1px solid var(--secondary-color);
 }
 
 /* OTP Modal Re-styled */

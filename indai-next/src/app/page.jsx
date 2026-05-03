@@ -446,27 +446,27 @@ const Login = () => {
                                 {(authMode === 'phone' || authMode === 'email') && (
                                     <>
                                         <div style={{ color: 'var(--text-secondary)' }}>
-                                            {authMode === 'phone' ? "Want to use a password? " : "Prefer using OTP? "}
-                                            <span style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white', fontWeight: '500' }}
-                                                onClick={() => setAuthMode(authMode === 'phone' ? 'email' : 'phone')}>
-                                                {authMode === 'phone' ? "Sign in with Email" : "Sign in with Phone"}
-                                            </span>
-                                        </div>
+                                             {authMode === 'phone' ? "Want to use a password? " : "Prefer using OTP? "}
+                                             <span style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-primary)', fontWeight: '500' }}
+                                                 onClick={() => setAuthMode(authMode === 'phone' ? 'email' : 'phone')}>
+                                                 {authMode === 'phone' ? "Sign in with Email" : "Sign in with Phone"}
+                                             </span>
+                                         </div>
 
-                                        <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.1)', margin: '4px 0' }}></div>
+                                         <div style={{ width: '100%', height: '1px', background: 'var(--sidebar-border)', margin: '4px 0' }}></div>
 
                                         <div style={{ color: 'var(--text-secondary)' }}>
                                             Don't have an account?
                                         </div>
                                         <div style={{ display: 'flex', gap: '16px' }}>
-                                            <span style={{ cursor: 'pointer', color: 'var(--primary-color)', fontWeight: '600' }} onClick={() => setAuthMode('register-phone')}>
-                                                Sign up with Phone
-                                            </span>
-                                            <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
-                                            <span style={{ cursor: 'pointer', color: 'var(--primary-color)', fontWeight: '600' }} onClick={() => setAuthMode('register-email')}>
-                                                Sign up with Email
-                                            </span>
-                                        </div>
+                                             <span style={{ cursor: 'pointer', color: 'var(--primary-color)', fontWeight: '600' }} onClick={() => setAuthMode('register-phone')}>
+                                                 Sign up with Phone
+                                             </span>
+                                             <span style={{ color: 'var(--sidebar-border)' }}>|</span>
+                                             <span style={{ cursor: 'pointer', color: 'var(--primary-color)', fontWeight: '600' }} onClick={() => setAuthMode('register-email')}>
+                                                 Sign up with Email
+                                             </span>
+                                         </div>
                                     </>
                                 )}
 
@@ -474,14 +474,14 @@ const Login = () => {
                                 {(authMode === 'register-phone' || authMode === 'register-email') && (
                                     <>
                                         <div style={{ color: 'var(--text-secondary)' }}>
-                                            {authMode === 'register-phone' ? "Want to use a password? " : "Prefer using OTP? "}
-                                            <span style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white', fontWeight: '500' }}
-                                                onClick={() => setAuthMode(authMode === 'register-phone' ? 'register-email' : 'register-phone')}>
-                                                {authMode === 'register-phone' ? "Sign up with Email" : "Sign up with Phone"}
-                                            </span>
-                                        </div>
+                                             {authMode === 'register-phone' ? "Want to use a password? " : "Prefer using OTP? "}
+                                             <span style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-primary)', fontWeight: '500' }}
+                                                 onClick={() => setAuthMode(authMode === 'register-phone' ? 'register-email' : 'register-phone')}>
+                                                 {authMode === 'register-phone' ? "Sign up with Email" : "Sign up with Phone"}
+                                             </span>
+                                         </div>
 
-                                        <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.1)', margin: '4px 0' }}></div>
+                                         <div style={{ width: '100%', height: '1px', background: 'var(--sidebar-border)', margin: '4px 0' }}></div>
 
                                         <div style={{ color: 'var(--text-secondary)' }}>
                                             Already have an account?
