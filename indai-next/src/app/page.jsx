@@ -159,7 +159,7 @@ const Login = () => {
     const handleEmailLogin = async (e) => {
         e.preventDefault();
         
-        if (!email || !password) {
+        if (!email.trim() || !password.trim()) {
             setOtpError("Please enter both email and password.");
             return;
         }
@@ -350,6 +350,7 @@ const Login = () => {
                                     <button className="submit-btn" onClick={handleEmailLogin} disabled={phoneLoading}>
                                         {phoneLoading ? <Loader2 size={20} className="lucide-spin" /> : "Sign In"}
                                     </button>
+                                    {otpError && <p style={{ color: '#ff4d4f', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>{otpError}</p>}
                                 </div>
                             )}
 
@@ -392,6 +393,7 @@ const Login = () => {
                                     <button className="submit-btn" onClick={handleRegister} disabled={phoneLoading}>
                                         {phoneLoading ? <Loader2 size={20} className="lucide-spin" /> : "Create Account"}
                                     </button>
+                                    {otpError && <p style={{ color: '#ff4d4f', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>{otpError}</p>}
                                 </div>
                             )}
 
@@ -433,6 +435,7 @@ const Login = () => {
                                     <button className="submit-btn" onClick={handleRegister} disabled={phoneLoading}>
                                         {phoneLoading ? <Loader2 size={20} className="lucide-spin" /> : "Create Account"}
                                     </button>
+                                    {otpError && <p style={{ color: '#ff4d4f', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>{otpError}</p>}
                                 </div>
                             )}
 
