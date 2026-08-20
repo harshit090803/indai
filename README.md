@@ -2,7 +2,7 @@
 
 Welcome to **IndAI**, a comprehensive AI-powered application that combines a local desktop voice assistant with a modern web dashboard.
 
-## 🚀 Features
+## Features
 
 - **Voice-Activated PC Assistant**: Runs quietly in your system tray. Just say "Hey IndAI" to activate it!
 - **Local Command Execution**: Ask IndAI to open apps, take screenshots, check CPU/RAM usage, adjust volume, and more.
@@ -11,7 +11,7 @@ Welcome to **IndAI**, a comprehensive AI-powered application that combines a loc
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 The project is divided into three main parts:
 
@@ -33,7 +33,7 @@ The project is divided into three main parts:
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### 1. Setting up the Local Voice Assistant (`indai-assistant`)
 
@@ -121,7 +121,7 @@ The backend API is built on Django Ninja and requires Python, PostgreSQL, and Mo
 
 ---
 
-## 🗣️ Using the Voice Assistant
+## Using the Voice Assistant
 
 Once the Python `main.py` is running, the assistant listens in the background. 
 - Say **"Hey IndAI"** to wake it up.
@@ -135,7 +135,7 @@ To stop the assistant, right-click the "INDAI" icon in your system tray and sele
 
 ---
 
-## ☁️ Deployment Notes
+## Deployment Notes
 
 ### Render Cold Starts (Backend)
 Currently, the IndAI Django backend is configured to be deployed on **Render's Free Tier**. Because of this, you may experience **Cold Starts**:
